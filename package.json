@@ -1,0 +1,15 @@
+{
+  "name": "sistem-monitoring-ta",
+  "version": "1.0.0",
+  "description": "Sistem Monitoring Tugas Akhir Mahasiswa",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
