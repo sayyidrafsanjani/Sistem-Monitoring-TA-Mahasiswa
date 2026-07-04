@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Ambil base URL dari environment variable
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Di Vercel, frontend dan backend di domain yang sama, jadi gunakan relative path
+export const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
