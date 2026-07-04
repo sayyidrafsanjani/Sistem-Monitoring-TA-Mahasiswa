@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+backend/node_modules/
+frontend/node_modules/
 
 # Build outputs
 frontend/dist/
@@ -11,6 +13,7 @@ frontend/.vite/
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env
 
 # Upload files
 backend/uploads/
@@ -33,3 +36,6 @@ server.log
 # Testing
 coverage/
 .nyc_output/
+
+# Vercel
+.vercel
