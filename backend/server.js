@@ -2,17 +2,46 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+// Setup CORS untuk production (izinkan domain frontend Anda)
+const allowedOrigins = [
+  'http://localhost:3000', 
+  'http://localhost:3002',
+  // Tambahkan domain Vercel Anda nanti, misalnya:
+  // 'https://sistem-monitoring-ta.vercel.app'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Connect to MongoDB (use in-memory if local fails)
+// Setup folder uploads (pastikan ada di production)
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Connect to MongoDB (gunakan Atlas di production)
 async function connectDB() {
-  let mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/thesis-monitoring';
+  let mongoUri = process.env.MONGO_URI;
+  if (!mongoUri) {
+    mongoUri = 'mongodb://localhost:27017/thesis-monitoring';
+  }
   
   try {
     await mongoose.connect(mongoUri, {
@@ -21,15 +50,9 @@ async function connectDB() {
     });
     console.log('MongoDB connected to:', mongoUri);
   } catch (err) {
-    console.log('Local MongoDB not available, starting in-memory server...');
-    // Start in-memory MongoDB
-    const mongoServer = await MongoMemoryServer.create();
-    const inMemoryUri = mongoServer.getUri();
-    await mongoose.connect(inMemoryUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('In-memory MongoDB connected to:', inMemoryUri);
+    console.error('MongoDB connection error:', err);
+    // Hapus in-memory server untuk production
+    process.exit(1);
   }
 }
 

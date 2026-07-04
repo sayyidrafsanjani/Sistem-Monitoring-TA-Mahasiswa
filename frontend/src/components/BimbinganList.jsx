@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import apiClient, { API_BASE_URL } from '../utils/api';
 import { useNotifications } from '../context/NotificationContext';
 
 const BimbinganList = ({ user }) => {
@@ -36,10 +36,9 @@ const BimbinganList = ({ user }) => {
 
   const handleUpdateStatus = async (bimbinganId, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/bimbingan/${bimbinganId}/status`,
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-      );
+      await apiClient.put(`/api/bimbingan/${bimbinganId}/status`, {
+        status: newStatus
+      });
       setMessage('Status bimbingan berhasil diperbarui!');
       fetchData();
     } catch (err) {
@@ -53,9 +52,7 @@ const BimbinganList = ({ user }) => {
       return;
     }
     try {
-      await axios.delete(`http://localhost:5000/api/bimbingan/${bimbinganId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await apiClient.delete(`/api/bimbingan/${bimbinganId}`);
       setMessage('Riwayat bimbingan berhasil dihapus!');
       fetchData();
     } catch (err) {
@@ -71,12 +68,8 @@ const BimbinganList = ({ user }) => {
   const fetchData = async () => {
     try {
       const [bimbinganRes, thesisRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/bimbingan', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        }),
-        axios.get('http://localhost:5000/api/thesis', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        })
+        apiClient.get('/api/bimbingan'),
+        apiClient.get('/api/thesis')
       ]);
       
       // Filter thesis sesuai role
@@ -155,10 +148,11 @@ const BimbinganList = ({ user }) => {
         formData.append('file', selectedFile);
       }
       
-      await axios.post('http://localhost:5000/api/bimbingan',
-        formData,
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-      );
+      await apiClient.post('/api/bimbingan', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       setMessage('Catatan bimbingan berhasil ditambahkan!');
       setShowForm(false);
       setSelectedThesis('');
@@ -342,7 +336,7 @@ const BimbinganList = ({ user }) => {
                       <td>
                         {bimbingan.file ? (
                           <a 
-                            href={`http://localhost:5000/api/bimbingan/download/${bimbingan.file}`} 
+                            href={`${API_BASE_URL}/api/bimbingan/download/${bimbingan.file}`} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}

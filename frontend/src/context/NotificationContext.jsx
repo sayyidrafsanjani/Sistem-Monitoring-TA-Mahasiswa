@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/api';
 
 const NotificationContext = createContext();
 
@@ -12,12 +12,8 @@ export const NotificationProvider = ({ children, user }) => {
     if (!user) return;
     try {
       const [notifRes, countRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/notifications', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        }),
-        axios.get('http://localhost:5000/api/notifications/unread/count', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        })
+        apiClient.get('/api/notifications'),
+        apiClient.get('/api/notifications/unread/count')
       ]);
       setNotifications(notifRes.data);
       setUnreadCount(countRes.data.count);
@@ -28,9 +24,7 @@ export const NotificationProvider = ({ children, user }) => {
 
   const markAsRead = async (notificationId) => {
     try {
-      await axios.put(`http://localhost:5000/api/notifications/${notificationId}/read`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await apiClient.put(`/api/notifications/${notificationId}/read`);
       fetchNotifications();
     } catch (err) {
       console.error('Error marking notification as read:', err);
@@ -39,9 +33,7 @@ export const NotificationProvider = ({ children, user }) => {
 
   const markAllAsRead = async () => {
     try {
-      await axios.put('http://localhost:5000/api/notifications/mark-all-read', {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await apiClient.put('/api/notifications/mark-all-read');
       fetchNotifications();
     } catch (err) {
       console.error('Error marking all notifications as read:', err);
