@@ -90,7 +90,7 @@ app.use('/api/bimbingan', require('../backend/routes/bimbingan'));
 app.use('/api/seminar', require('../backend/routes/seminar'));
 app.use('/api/notifications', require('../backend/routes/notifications'));
 
-// Vercel handler
+// Vercel handler - Updated for deployment
 module.exports = async (req, res) => {
   await connectDB();
   await seedAdmin();
