@@ -11,7 +11,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000', 
   'http://localhost:3002',
-  // Izinkan semua subdomain Vercel untuk development
+  // Izinkan semua subdomain Vercel
   /\.vercel\.app$/
 ];
 
@@ -32,7 +32,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Folder uploads (catatan: Vercel tidak menyediakan persistent storage untuk uploads)
-const uploadsDir = path.join(__dirname, '../backend/uploads');
+const uploadsDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
@@ -64,7 +64,7 @@ async function connectDB() {
 // Seed admin
 async function seedAdmin() {
   try {
-    const User = require('../backend/models/User');
+    const User = require('../models/User');
     const existingAdmin = await User.findOne({ username: 'jusjus' });
     
     if (!existingAdmin) {
@@ -84,11 +84,11 @@ async function seedAdmin() {
 }
 
 // Setup routes
-app.use('/api/auth', require('../backend/routes/auth'));
-app.use('/api/thesis', require('../backend/routes/thesis'));
-app.use('/api/bimbingan', require('../backend/routes/bimbingan'));
-app.use('/api/seminar', require('../backend/routes/seminar'));
-app.use('/api/notifications', require('../backend/routes/notifications'));
+app.use('/api/auth', require('../routes/auth'));
+app.use('/api/thesis', require('../routes/thesis'));
+app.use('/api/bimbingan', require('../routes/bimbingan'));
+app.use('/api/seminar', require('../routes/seminar'));
+app.use('/api/notifications', require('../routes/notifications'));
 
 // Vercel handler
 module.exports = async (req, res) => {
