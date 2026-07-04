@@ -12,13 +12,15 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000', 
   'http://localhost:3002',
-  // Tambahkan domain Vercel Anda nanti, misalnya:
-  // 'https://sistem-monitoring-ta.vercel.app'
+  // Izinkan semua subdomain Vercel
+  /\.vercel\.app$/
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.some(allowed => 
+      typeof allowed === 'string' ? allowed === origin : allowed.test(origin)
+    )) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
